@@ -1,0 +1,5 @@
+# Files that should exist in git but never be uploaded/served by Vercel.
+server.js
+scripts/
+README-AR.md
+.env.example

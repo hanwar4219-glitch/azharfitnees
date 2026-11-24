@@ -1,0 +1,37 @@
+# تشغيل منصة اللياقة البدنية على Vercel + MongoDB Atlas
+
+## 1) MongoDB Atlas
+1. أنشئ Cluster (ابدأ بـ M0 للتجربة، وللتشغيل الرسمي استخدم M10 أو أعلى لأن النسخ الاحتياطية التلقائية لا تتوفر في M0).
+2. Database Access ← Add New Database User: اسم وكلمة مرور قوية، وصلاحية Read and write على قاعدة `fitness` فقط.
+3. Network Access ← Add IP Address ← Allow access from anywhere (0.0.0.0/0). السبب: عناوين Vercel متغيرة؛ الحماية تعتمد على كلمة مرور قاعدة البيانات القوية.
+4. Connect ← Drivers ← انسخ رابط الاتصال `mongodb+srv://...` واستبدل `<password>`.
+
+## 2) إنشاء المستخدمين (من جهازك، يتطلب Node 20)
+```
+npm install
+export MONGODB_URI="mongodb+srv://USER:PASS@cluster.mongodb.net/?retryWrites=true&w=majority"
+
+# المدير العام
+node scripts/create-user.js admin "كلمة-مرور-قوية" super_admin - "المدير العام"
+
+# مدير منطقة (اسم المنطقة يطابق حرفيًا ما يظهر في المنصة)
+node scripts/create-user.js giza "كلمة-مرور-قوية" region_manager "الجيزة" "مدير الجيزة"
+
+# مدخل بيانات
+node scripts/create-user.js entry1 "كلمة-مرور-قوية" data_entry "الجيزة" "مدخل 1"
+```
+تشغيل الأمر على اسم مستخدم موجود يحدّث كلمة المرور/الدور/المنطقة. أضف `--inactive` لإيقاف حساب.
+
+## 3) النشر على Vercel
+1. ارفع هذا المجلد إلى GitHub (أو استخدم `npx vercel`).
+2. في Vercel: Add New Project ← اختر المستودع.
+3. Settings ← Environment Variables:
+   - `MONGODB_URI` = رابط Atlas
+   - `JWT_SECRET` = نص عشوائي طويل (32 حرفًا فأكثر)، مثل ناتج: `openssl rand -base64 48`
+4. Deploy، ثم افتح الرابط وسجّل الدخول.
+
+## الصلاحيات (تُفرض في الخادم)
+- مدير عام: كل المناطق، قراءة وكتابة وحذف.
+- مدير منطقة: منطقته فقط، قراءة وكتابة وحذف.
+- مدخل بيانات: منطقته فقط، قراءة وإضافة وتعديل بدون حذف.
+- تُحدَّث البيانات على الأجهزة الأخرى كل 15 ثانية تقريبًا.
