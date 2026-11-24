@@ -2,7 +2,7 @@
   "name": "fitness-platform",
   "version": "1.0.0",
   "private": true,
-  "engines": { "node": "20.x" },
+  "engines": { "node": "26.x" },
   "scripts": {
     "dev": "node server.js",
     "create-user": "node scripts/create-user.js"

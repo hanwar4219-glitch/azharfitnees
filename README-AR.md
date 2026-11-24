@@ -6,7 +6,7 @@
 3. Network Access ← Add IP Address ← Allow access from anywhere (0.0.0.0/0). السبب: عناوين Vercel متغيرة؛ الحماية تعتمد على كلمة مرور قاعدة البيانات القوية.
 4. Connect ← Drivers ← انسخ رابط الاتصال `mongodb+srv://...` واستبدل `<password>`.
 
-## 2) إنشاء المستخدمين (من جهازك، يتطلب Node 20)
+## 2) إنشاء المستخدمين (من جهازك، يتطلب Node 26)
 ```
 npm install
 export MONGODB_URI="mongodb+srv://USER:PASS@cluster.mongodb.net/?retryWrites=true&w=majority"
