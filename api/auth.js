@@ -37,6 +37,6 @@ module.exports = async (req, res) => {
     return res.json({ user: { id: String(u._id), username: u.username || u.email, full_name: u.name || u.username || u.email, role: u.role, region: u.region || null, active: true } });
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ error: 'خطأ في الخادم', debug: e && e.message });
+    return res.status(500).json({ error: 'خطأ في الخادم' });
   }
 };
