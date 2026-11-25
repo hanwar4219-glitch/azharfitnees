@@ -14,9 +14,16 @@ module.exports = async (req, res) => {
 
     if (req.method === 'GET') {
       if (req.query.meta) {
-        const agg = await col.aggregate([{ $match: scope }, { $group: { _id: '$type', n: { $sum: 1 }, m: { $max: '$updatedAt' } } }]).toArray();
-        agg.sort((a, b) => String(a._id).localeCompare(String(b._id)));
-        return res.json({ sig: JSON.stringify(agg) });
+        const [agg, dir] = await Promise.all([
+          col.aggregate([{ $match: scope }, { $group: { _id: '$type', n: { $sum: 1 }, m: { $max: '$updatedAt' } } }]).toArray(),
+          // The shared directory is global: every user must notice its changes
+          // even though it sits outside their region scope.
+          col.findOne({ _id: 'directory:main' }, { projection: { updatedAt: 1 } }),
+        ]);
+        const rows = agg.filter(a => a._id !== 'directory');
+        rows.sort((a, b) => String(a._id).localeCompare(String(b._id)));
+        if (dir && dir.updatedAt) rows.push({ _id: 'directory', n: 1, m: dir.updatedAt });
+        return res.json({ sig: JSON.stringify(rows) });
       }
       const type = req.query.type;
       if (!TYPES.includes(type)) return res.status(400).json({ error: 'bad type' });

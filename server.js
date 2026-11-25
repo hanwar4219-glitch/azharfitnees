@@ -32,6 +32,7 @@ const ROUTES = {
   '/api/auth': './api/auth',
   '/api/users': './api/users',
   '/api/records': './api/records',
+  '/api/directory': './api/directory',
 };
 const handlers = {};
 function handler(name) {
